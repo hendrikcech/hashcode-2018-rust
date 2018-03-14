@@ -125,3 +125,43 @@ fn parse_output_file(path: &Path) -> Vec<Vec<usize>> {
 fn read_line(line: &str) -> Vec<usize> {
     line.trim().split(' ').map(|v| v.parse().unwrap()).collect()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn simulation_b() {
+        let input_file = Path::new("b_should_be_easy.in");
+        let output_file = Path::new("b_should_be_easy 173950.in");
+        let score = run_and_cmp(input_file, output_file);
+
+        assert_eq!(score, 173950);
+    }
+
+    #[test]
+    fn simulation_d() {
+        let input_file = Path::new("d_metropolis.in");
+        let output_file = Path::new("d_metropolis 10420438.in");
+        let score = run_and_cmp(input_file, output_file);
+
+        assert_eq!(score, 10420438);
+    }
+
+    fn run_and_cmp(input_file: &Path, output_file: &Path) -> usize {
+        let root = env!("CARGO_MANIFEST_DIR");
+        let input = Path::new(&root).join("input/").join(input_file);
+        let output = Path::new(&root).join("output/").join(output_file);
+
+        let (problem, vehicles, rides) = parse_input_file(&input);
+
+        let assignment = parse_output_file(&output);
+
+        let simulation = Simulation::new(problem, vehicles, rides);
+        let (score, errors) = simulation.score(assignment);
+
+        assert_eq!(errors.len(), 0);
+
+        score
+    }
+}
