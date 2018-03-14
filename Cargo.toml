@@ -1,0 +1,6 @@
+[package]
+name = "hashcode2018"
+version = "0.1.0"
+authors = ["Hendrik Cech <hendrik.cech@gmail.com>"]
+
+[dependencies]
