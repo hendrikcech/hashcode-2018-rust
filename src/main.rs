@@ -26,14 +26,14 @@ fn main() {
 }
 
 fn solve_and_score(path: &Path) -> usize {
-    let (problem, vehicles, rides) = parse_input_file(&path);
+    let (problem, vehicles, rides) = parse_input_file(path);
 
     let mut solver = Solver::new(problem.clone(), vehicles.clone(), rides.clone());
     let assignment = solver.solve();
 
     let simulation = Simulation::new(problem, vehicles, rides);
-    let (score, errors) = simulation.score(assignment);
-    if errors.len() > 0 {
+    let (score, errors) = simulation.score(&assignment);
+    if !errors.is_empty() {
         for error in errors {
             println!("{}", error);
         }
@@ -56,8 +56,7 @@ fn parse_input_file(path: &Path) -> (Problem, Vec<Vehicle>, Vec<Ride>) {
 
     let mut rides = Vec::new();
 
-    let mut ride_id = 0;
-    for line in lines {
+    for (ride_id, line) in lines.enumerate() {
         let l = read_line(line);
         let v = Ride {
             id: ride_id,
@@ -68,7 +67,6 @@ fn parse_input_file(path: &Path) -> (Problem, Vec<Vehicle>, Vec<Ride>) {
             done: false,
         };
         rides.push(v);
-        ride_id += 1;
     }
 
     let mut vehicles = Vec::new();
@@ -103,8 +101,8 @@ fn parse_output_file(path: &Path) -> Vec<Vec<usize>> {
 
     for line in input.lines() {
         let p = read_line(line);
-        if p.len() == 0 {
-            println!("p.len() == 0");
+        if p.is_empty() {
+            println!("p.is_empty()");
             continue;
         }
         if p[0] == 0 {

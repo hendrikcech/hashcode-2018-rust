@@ -9,13 +9,13 @@ pub struct Simulation {
 impl Simulation {
     pub fn new(problem: Problem, vehicles: Vec<Vehicle>, rides: Vec<Ride>) -> Simulation {
         Simulation {
-            problem: problem,
-            rides: rides,
-            vehicles: vehicles,
+            problem,
+            rides,
+            vehicles,
         }
     }
 
-    pub fn score(mut self, assignment: Vec<Vec<usize>>) -> (usize, Vec<String>) {
+    pub fn score(mut self, assignment: &[Vec<usize>]) -> (usize, Vec<String>) {
         let mut score = 0;
         let mut errors = Vec::new();
 
@@ -24,36 +24,31 @@ impl Simulation {
                 let mut vehicle = &mut self.vehicles[vehicle_id];
                 let mut ride = &mut self.rides[*ride_id];
 
-                let (_, _, ride_distance, total) = travel_time(&vehicle, &ride);
+                let (_, _, ride_distance, total) = travel_time(vehicle, &ride);
 
                 if ride.done {
-                    let error = String::from(format!(
-                        "Ride {} assigned to {} already done.",
-                        ride_id, vehicle_id
-                    ));
+                    let error = format!("Ride {} assigned to {} already done.",
+                                        ride_id, vehicle_id);
                     errors.push(error);
                     continue 'outer;
                 }
 
                 if vehicle.time + total > self.problem.sim_steps {
-                    let error = String::from(format!(
-                        "Ride {} not finished by {} before end of simulation.",
-                        ride_id, vehicle_id
-                    ));
+                    let error = format!("Ride {} not finished by {} before end of simulation.",
+                                        ride_id, vehicle_id);
                     errors.push(error);
                     continue 'outer;
                 }
 
                 if vehicle.time + total >= ride.latest {
-                    let error = String::from(format!(
+                    let error = format!(
                         "Ride {} not finished by {} before ride deadline: {:?}, {:?}, {}",
-                        ride_id, vehicle_id, ride, vehicle, total
-                    ));
+                        ride_id, vehicle_id, ride, vehicle, total);
                     errors.push(error);
                     continue 'outer;
                 }
 
-                let bonus = if gets_bonus(&vehicle, &ride) {
+                let bonus = if gets_bonus(vehicle, ride) {
                     self.problem.bonus
                 } else {
                     0

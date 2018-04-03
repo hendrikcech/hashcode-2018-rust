@@ -31,9 +31,9 @@ impl Solver {
         }
 
         Solver {
-            problem: problem,
+            problem,
             vehicles: vehicle_heap,
-            rides: rides,
+            rides,
         }
     }
 
@@ -43,16 +43,16 @@ impl Solver {
             assignment.push(Vec::new());
         }
 
-        while self.rides.len() > 0 && self.vehicles.len() > 0 {
+        while !self.rides.is_empty() && !self.vehicles.is_empty() {
             let vehicle = &mut self.vehicles.pop().unwrap();
 
-            if let Some(ride_id) = self.best_ride_for_vehicle(&vehicle) {
+            if let Some(ride_id) = self.best_ride_for_vehicle(vehicle) {
                 assignment[vehicle.id].push(ride_id);
 
                 let mut ride = &mut self.rides[ride_id];
                 ride.done = true;
 
-                let (_, _, _, total) = travel_time(vehicle, &ride);
+                let (_, _, _, total) = travel_time(vehicle, ride);
 
                 vehicle.pos = ride.finish;
                 vehicle.time += total;
